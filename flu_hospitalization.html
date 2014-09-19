@@ -1,0 +1,318 @@
+
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Rate by demographic</title>
+<head><link rel="stylesheet" type="text/css" href="flu_style.css" /></head> 
+
+
+<style>
+
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.x.axis path {
+  fill:none;
+  stroke:#000;
+  shape-rendering: crispEdges;
+}
+
+.x.axis text {
+font-size: 12px;
+}
+
+.line {
+  fill: none;
+  stroke-width: 2.0px;
+}
+
+.commentHolder{
+  position: relative;
+  top: -560px;
+  right: -150px;
+  width: 500px;
+  opacity: 0;
+  font-size: 12px;
+
+}
+
+</style>
+<div class="title">Hospital visits for flu-like illness in the South</div>
+
+<div class="subtitle">One of the ways to see the severity of a flu season is to count the percent of hospital visits that are for "flu-like symptoms."  But the type of flu and who it hits are also part of the story.  Click on the legend or lines to learn more.</div>
+
+
+
+<p class="chart">
+<p class="footer"> 
+  This graph includes Region 4, as defined by the Department of Health and Human Services: Alabama, Florida, Georgia, Kentucky, Mississippi, North Carolina, South Carolina and Tennessee.
+  <br><br>
+  Percentage of visits for influenza-like illness reported by the U.S. Outpatient Influenza-like Illness Surveillance Network (ILINet), weekly national summary, selected seasons.<br><br>
+  Source: <a href="http://gis.cdc.gov/grasp/fluview/fluportaldashboard.html" target="_blank">http://gis.cdc.gov/grasp/fluview/fluportaldashboard.html</a>
+  <br><br>
+  See more at CDC's <a href="http://www.cdc.gov/flu/weekly/" target=_blank>FluView</a>
+  <br><br>
+  Methodology: The data above was downloaded Sept. 14 from the CDC as a custom spreadsheet. It was refined in Excel and graphed with Javascript.
+</div>
+
+
+<!-- ************* SOURCE & NOTES *************
+
+http://gis.cdc.gov/grasp/fluview/fluportaldashboard.html Accessed 9/14/14
+
+********* /SOURCE ******************** -->
+
+<body>
+<script>document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1"></' + 'script>')</script>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+
+<script>
+
+
+console.log("ok");
+
+//YEAR,  WEEK,  ILITOTAL,  TOTAL PATIENTS,  NUM OF PROVIDERS,  PERCENT_WEIGHTED_ILI,  PERCENT_UNWEIGHTED_ILI
+
+var margin = {top: 20, right: 10, bottom: 40, left: 50},
+    width = 768 - margin.left - margin.right,
+    height = (width*0.66) - margin.top - margin.bottom;
+
+var labelConverter = d3.scale.ordinal() // called on xAxis
+  .domain([0, 52])
+  .range(["Aug.", "Sept.", "Oct.", "Nov.", "Dec.", "Jan.", "Feb.", "Mar.", "Apr.", "May", "Jun.", "July"]);
+
+var x = d3.scale.linear()
+   .domain([0, 52])
+   .range([0, width]);
+
+var y = d3.scale.linear()
+    .range([height, 0])
+    .domain([0, 9]);
+
+var xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom")
+    .ticks(13)    
+    .tickFormat(function (d, i) {return labelConverter(i);} );  // make Aug, Sept, etc appear instead of numbers
+
+var yAxis = d3.svg.axis()
+  .scale(y)
+  .orient("left");
+
+var svg = d3.select(".chart").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+var line = d3.svg.line()
+  .interpolate("basis")
+  .x(function (d) {return x(d.seasonal_week) ;})
+  .y(function (d) {return y(d.rate); });
+
+var color = d3.scale.category10();
+
+var zeronine_ten_string = d3.select("body").append("div")
+  .attr("class", "zeronine_ten" + " commentHolder" )
+  .text("Flu peaked early, in October. The DPH also saw unusual summer flu activity. They blame it on the then-novel 2009 H1N1 virus.");
+
+
+var twelve_thirteen_string = d3.select("body").append("div")
+  .attr("class", "twelve_thirteen" + " commentHolder")
+  .text("The severe H3N2 virus predominated nationwide, according to the CDC, leading to higher rates of hospitlization and death than in recent years.");
+
+var thirteen_fourteen_string = d3.select("body").append("div")
+  .attr("class", "thirteen_fourteen" + " commentHolder")
+  .text("In Georgia, the 2009 H1N1 particularly impacted healthy young adults, according to the DPH.");
+
+
+var ten_eleven_string = d3.select("body").append("div")
+  .attr("class", "ten_eleven" + " commentHolder")
+  .text("In early 2011, more of the positive flu tests the CDC saw were part of the H3 group, which is associated with more severe illness.");
+
+var zeroeight_zeronine_string = d3.select("body").append("div")
+  .attr("class", "zeroeight_zeronine" + " commentHolder")
+  .text("The novel 2009 H1N1 virus began appearing in the south in May.");
+
+var eleven_twelve_string = d3.select("body").append("div")
+  .attr("class", "eleven_twelve" + " commentHolder")
+  .text("The predominant flu varied by region in 2011-2012. Hospitalization rates were lower than the year previous for all age groups.");
+
+// ***** convert week enumeration into something we can use *******
+// I want x=0 to be September, not January ... so that we keep the winter months, the flu months, together
+// Flu season starts about week 30
+// But weeks are numbered in their data .range([0, 52])  
+// How to graph ([30, 29_of_the_next_year])?
+// How about convert the first week in January to Week 53?
+// So range = ([30 - 82])
+
+function seasonWeek(some_num) {
+  //some_num is the numerical week of the year, as it comes in the raw data
+  // what returns is the week of the flu year.
+  if (some_num < 31) {return some_num + 31;}
+  else {return some_num-31;}
+;}
+
+function seasonAssigner(num1, num2) {
+  // numb 1 is calendar week, num 2 is year 
+  //output is a string representing the flu season, like "2008 2009"
+  if (num1 < 31) {return (num2 -1) + "-" + num2;}
+  else {return num2 + "-" + (num2+1);}
+;}
+
+function classAssigner(some_str) { // alas you cant have numbers in a class name
+  if (some_str == "2007-2008") {return "zeroseven_zeroeight";}
+  if (some_str == "2008-2009") {return "zeroeight_zeronine";}
+  if (some_str == "2009-2010") {return "zeronine_ten";}
+  if (some_str == "2010-2011") {return "ten_eleven";}
+  if (some_str == "2011-2012") {return "eleven_twelve";}
+  if (some_str == "2012-2013") {return "twelve_thirteen";}
+  if (some_str == "2013-2014") {return "thirteen_fourteen";}
+  if (some_str == "2014-2015") {return "fourteen_fifteen";}
+}
+
+
+// ***** close week enumeration converter ********
+
+// ********* LOAD DATA
+
+//CATCHMENT, NETWORK, SEASON,  MMWR-YEAR, MMWR-WEEK, AGE, CATEGORY,  RATE 
+d3.csv("ILINet_south.csv", function (south_error, south_data){
+
+
+
+color.domain(d3.keys(south_data[0]).filter(function(key) {return key == 'YEAR'; }));
+
+
+
+
+  south_data.forEach(function (d) {
+    d.rate = +d.PERCENT_WEIGHTED_ILI,
+    d.calendar_week = +d.WEEK,
+    d.seasonal_week = seasonWeek(+d.WEEK),
+    d.year = +d.YEAR,
+    d.season = seasonAssigner(d.calendar_week, d.year)
+    d.region = d.REGION; 
+  });
+
+    south_data.forEach(function (d) {
+      if (d.season == "2008-2019") {d.explainer = zeroeight_zeronine_string; }
+    });
+
+console.log(south_data)
+
+  //nest data by season
+
+
+  south_data = d3.nest()
+    .key(function (d) {return d.season; })
+    .entries(south_data);
+
+
+  //draw
+
+
+  var south_seasons = svg.selectAll(".season")
+    .data(south_data, function (d) {return d.key; })
+    .enter().append("g")
+    .attr('class', function (d) {return classAssigner(d.key) + " line"; });
+
+  south_seasons.append("path")
+    .attr("class", "line")
+    .attr("opacity", 1.0)
+    .attr("d", function (d) { return line(d.values); })
+    .style("stroke", function (d) {return color(d.key); })
+            .on("mouseover", function (d){
+          d3.selectAll("." + classAssigner(d.key) + " .line").style("stroke", "black").style("stroke-width", "5px")
+          d3.selectAll("." + classAssigner(d.key) + ".commentHolder").style("opacity", 1);
+          
+        })
+        .on("mouseout", function (d) {
+           d3.selectAll("." + classAssigner(d.key) + " .line").style("stroke", function (k) {return color(k.key)}).style("stroke-width", "1.5px")
+           d3.selectAll("." + classAssigner(d.key) + ".commentHolder").style("opacity", 0);
+        });
+
+  // Add axes
+  svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis);
+
+  svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis)
+    .append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 0-margin.left)
+      .attr("x", 0-height/2)
+      .attr("dy", "1em")
+      .style("text-anchor", "middle")
+      .text("percent of visits for influenza-like symptoms")
+
+  // add legend
+
+
+      
+  var legend = svg.selectAll('.legend')
+        .data(south_data, function (d) {return d.key;})
+        .enter()
+      .append('g')
+        .attr('class', function (d) {return classAssigner(d.key) + " legend"; });
+
+    legend.append('rect')
+        .attr('x', width - 70)
+        .attr('y', function(d, i){ return i *  20;})
+        .attr('width', 18)
+        .attr('height', 4)
+        .style('fill', function(d) {return color(d.key); })
+        .on("mouseover", function (d){
+          d3.selectAll("." + classAssigner(d.key) + " .line").style("stroke", "black").style("stroke-width", "5px")
+          d3.selectAll("." + classAssigner(d.key) + ".commentHolder").style("opacity", 1);
+        })
+        .on("mouseout", function (d) {
+           d3.selectAll("." + classAssigner(d.key) + " .line").style("stroke", function (k) {return color(k.key)}).style("stroke-width", "1.5px")
+           d3.selectAll("." + classAssigner(d.key) + ".commentHolder").style("opacity", 0);
+        });
+
+    legend.append('text')
+        .attr('x', width - 50)
+        .attr('y', function(d, i){ return (i *  20) + 6;})
+        .text(function(d){ return d.key; })
+        .on("mouseover", function (d){
+          d3.selectAll("." + classAssigner(d.key) + " .line").style("stroke", "black").style("stroke-width", "5px")
+          d3.selectAll("." + classAssigner(d.key) + ".commentHolder").style("opacity", 1);
+        })
+        .on("mouseout", function (d) {
+           d3.selectAll("." + classAssigner(d.key) + " .line").style("stroke", function (k) {return color(k.key)}).style("stroke-width", "1.5px")
+           d3.selectAll("." + classAssigner(d.key) + ".commentHolder").style("opacity", 0);
+        });
+
+
+});
+
+
+
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
