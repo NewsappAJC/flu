@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html class="ocks-org do-not-copy">
+<meta charset="utf-8">
+<title>Flu Vaccination Rate</title>
+<head><link rel="stylesheet" type="text/css" href="flu_style.css" /></head> 
+
+<style>
+
+
+.axis path{
+  stroke: none;
+  fill: none;
+  stroke: #FFF;
+  shape-rendering: crispEdges;
+}
+
+
+.axis line {
+  stroke: none;
+  fill: none;
+  stroke: #FFF;
+  shape-rendering: crispEdges;
+}
+
+div.explanationOne {
+  position: relative;
+  top: -760px;
+  right: -550px;
+  width: 250px;
+}
+
+div.explanationTwo {
+  position: relative;
+  top: -740px;
+  right: -550px;
+  width: 250px;
+}
+
+div.explanationThree {
+  position: relative;
+  top: -720px;
+  right: -550px;
+  width: 250px;
+}
+
+div.legendTitle{
+  position: relative;
+  top: -1300px;
+  right: -590px;
+  width: 250px;
+}
+
+
+</style>
+<body>
+<div class="title">Georgia lags in flu vaccination rates</div>
+<div class="subtitle">Georgia brought down the national flu vaccination rate during the 2012-2103 season.</div>
+
+<p class="chart">
+<p class="footer">
+
+  May, 2013 cumulative flu vaccination rate for the 2012-2013 flu season. Vaccination coverage estimates by State National Immunization Survey (NIS) and Behavioral Risk Factor Surveillance System (BRFSS), 2012–13 influenza season.
+<br>
+<br>
+Numbers reflect a 95% confidence interval with margin of error under 5 percent.
+<br>
+<br>
+Source: <a href="http://www.cdc.gov/flu/fluvaxview/coverage-1213estimates.htm" target="_blank">http://www.cdc.gov/flu/fluvaxview/coverage-1213estimates.htm</a>
+<br><br>
+Methodology: 
+The data above was downlaoded Sept. 9 from the CDC as a spreadsheet, concatenated and refined using Python, then filtered and graphed with Javascript.
+
+<script>document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1"></' + 'script>')</script>
+<script src="http://d3js.org/d3.v2.min.js?2.9.1"></script>
+<script>
+
+console.log("ok");
+
+
+// ************ DECLARATIONS
+
+var margin = {top: 10, right: 0, bottom: 10, left: 10},
+    width = 768 - margin.left - margin.right,
+    height = (width * 1.3) - margin.top - margin.bottom;
+
+
+var states,
+    age;
+
+var x = d3.scale.linear()
+    .domain([0, 100])// Don't use max function. Hardcode 100 b/c 100 is the real-life maximum vaccination rate.
+    .range([0, width-150]);
+
+var y = d3.scale.ordinal()
+    .rangeRoundBands([0, height], .1);
+
+var xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("top")
+    .tickSize(-height - margin.bottom);
+    //.tickFormat(format);
+
+var color = d3.scale.category10(); 
+
+var svg = d3.select(".chart").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .style("margin-left", -margin.left + "px")
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+svg.append("g")
+    .attr("class", "x axis");
+
+// ******** END DECLARATIONS
+
+// ********* LOAD DATA, SORT & FILTER
+
+d3.csv("flu_vaccination.csv", function(data) {
+  // first, whittle down the data & clean up the labels
+  // ?? OR FILTER & CUT IN .CSV for quick load sake ?? 
+
+  // filter out data series for the 10 CDC regions. We just want the states.
+  data = data.filter(function (d) {
+    if (d.State.indexOf("Region") > -1) {return false;}
+    {return true;} 
+  });
+
+  //cut extraneous columns
+  // to re-add, just delete the delete line
+  // and adjust some of the titles so they can squeeze in
+  data.forEach( function (d, i) { 
+    delete d['13 - 17'],
+    delete d['5 to 12'],
+    delete d['6 months - 4 yrs'],
+    delete d['50 - 64'],
+    delete d['18 - 49'],
+    delete d['18 - 49 at high risk'],
+    delete d['18-64 at high risk'],
+    d['All persons 6 months +'] = d['6 months and up, all persons'],
+    d['Hispanic, 6 months +'] = d['6 months and up, hispanic'],
+    d['Black, 6 months +'] = d['6 months and up, black'],
+    d['White, 6 months +'] = d['6 months and up, white'],
+    d['Multiple or other race, 6 months +'] = d['6 months and up, mutliple or other race']
+    
+  ;})
+
+  data.forEach (function (d, i) {
+    delete d['6 months and up, mutliple or other race'],
+    delete d['6 months and up, all persons'],
+    delete d['6 months and up, hispanic'],
+    delete d['6 months and up, black'],
+    delete d['6 months and up, white']
+
+  ;})
+
+  states = data;
+
+  var ages = d3.keys(states[0]).filter(function(key) {
+    return key != "State";
+  });
+
+color.domain(ages);
+default_age = "6 months - 17 years"; // initialize the age to be graphed
+
+  states.forEach(function(state) {
+    ages.forEach(function(age) {
+      state[age] = state[age];
+    });
+  });
+
+  // ******* DATA SORTED, LOADED, FILTERED
+
+  //******** LEGEND
+
+
+
+  var legend = svg.selectAll(".legend")
+    .data(color.domain().slice())
+      .enter().append("g")
+      .attr("class", "legend")
+      // move legend up and down
+      .attr("transform", function(d, i) {return "translate(0," + (i+4) *20 + ")"; });
+
+
+  legend.append("rect")
+      .attr("x", width*0.975) // move leged left and right
+      .attr("width", 18)
+      .attr("height", 18)
+      .style("fill", color)      
+      .on("click", function (d) {
+        default_age = d; // reset the age we'll draw with to whatever we click on
+        return change();}); //then call the change function
+
+
+  legend.append("text")
+      .attr("x", width*0.965)
+      .attr("y", 9)
+      .attr("dy", ".35em")
+      .style("text-anchor", "end")
+      .text(function (d) {return d; })
+      .on("click", function (d) {
+        default_age = d;
+        return change();});
+
+  var explanationOne = d3.select("body").append("div")
+    .attr("class", "explanationOne")
+    .text("Georgians face some of the same barriers to a flu shot as people in the rest of the country, like getting time off work to take the family for their immunization, according to the Georgia Department of Public Health. Pregnant women are a special concern as 41 Georgia counties have no OB service.");
+
+  var explanationTwo = d3.select("body").append("div")
+    .attr("class", "explanationTwo")
+    .text("This school year, the DPH is repeating a school-based program that nearly doubled the number of K-12-age children vaccinated in 2012-2013. County health departments partner with community groups, places of worship and employers to deploy shots at convenient, accesible times and places.");
+
+  var explanationThree = d3.select("body").append("div")
+    .attr("class", "explanationThree")
+    .text("The DPH advises everyone over the age of 6 months to get an annual flu shot.");
+
+  var legendTitle = d3.select("body").append("div")
+    .attr("class", "legendTitle")
+    .text("Click to see how your demographic stacks up");
+
+
+  
+  redraw();
+}); // CLOSE INITIAL FUNCTION
+
+var altKey;
+
+d3.select(window)
+    .on("keydown", function() { altKey = d3.event.altKey; })
+    .on("keyup", function() { altKey = false; });
+
+// ******** CHANGE FUNCTION
+
+function change() {
+
+  d3.transition()
+      .duration(altKey ? 7500 : 750)
+      .each(redraw);
+}
+
+//********* DRAW FUNCTION
+
+function redraw() {
+
+    var age1 = default_age,
+    top = states.sort(function(a, b) { return b[age1] - a[age1]; });
+
+  y.domain(top.map(function(d) { return d.State; }));
+  
+  var bar = svg.selectAll(".bar")
+      .data(top, function(d) { return d.State; })
+      .attr("class", "bar");
+
+  // entering transition
+
+  var barEnter = bar.enter().insert("g", ".axis")
+      .attr("class", "bar")
+      .attr("transform", function(d) { return "translate(0," + (y(d.State) + height) + ")"; })
+      .style("fill-opacity", 0); // this is when it's flipping around
+
+  barEnter.append("rect")
+      .attr("width", 50) 
+      .attr("height", y.rangeBand());
+
+  barEnter.append("text")
+      .attr("class", "label")
+      .attr("x", -3)
+      .attr("y", y.rangeBand() / 2)
+      .attr("dy", ".35em")
+      .attr("text-anchor", "end")
+      // string "District of Columbia" is too long.
+      .text( function (d) {
+        if (d.State == "District of Columbia") {return "DC";}
+        {return d.State;}
+      });
+
+      
+  // first transition done, now drawing updated bar
+  
+  age = age1;
+
+  var barUpdate = d3.transition(bar)
+      //transform it a little further right for the labels
+      .attr("transform", function(d) { return "translate(80," + (d.y0 = y(d.State)) + ")"; })
+      .style("fill-opacity", 1.0); // this is the default 
+
+  barUpdate.select("rect")   
+      .attr("width", function (d) { return x(d[age]);})
+      .attr("fill", function (d) {
+        if (d.State == "Georgia") {return "goldenrod";} // Highlight Georgia
+        else {return color(age); } ;})
+      .attr("fill-opacity", function (d) {
+        if (d.State == "United States") {return 0.6;} ;});// Highlight U.S. average
+      
+     
+  // now wiping away bars
+
+  var barExit = d3.transition(bar.exit())
+      .attr("transform", function(d) { return "translate(0," + (d.y0 + height) + ")"; })
+      .style("fill-opacity", 1) //this is when it's flipping around 
+      .remove();
+
+  barExit.select("rect")
+      .attr("width", 50);
+
+  barExit.select(".value")
+      .attr("x", function(d) { return x(d[age]) - 3; })
+      .text(function(d) { return format(d[age]); });
+
+  d3.transition(svg).select(".axis")
+      //again, translate a little further right for space for labels
+      .attr("transform", function(d) { return "translate(80," + 0 + ")"; })
+      .call(xAxis);
+}
+// ****** END DRAW FUNCTION
+
+
+</script>
+</body>
+</html>
