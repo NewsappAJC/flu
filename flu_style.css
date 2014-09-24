@@ -2,6 +2,7 @@
 /*default font*/
 body {
 	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-size: 12px;
 }
 
 .title {
@@ -24,14 +25,7 @@ body {
 	font-size: 12px;
 }
 
-div.explanationOne {
-	font-size: 12px;
-
-}
-div.explanationTwo {
-	font-size: 12px;
-}
-div.explanationThree {
+.explainer {
 	font-size: 12px;
 }
 
