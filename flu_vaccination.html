@@ -6,7 +6,6 @@
 
 <style>
 
-
 .axis path{
   stroke: none;
   fill: none;
@@ -22,42 +21,33 @@
   shape-rendering: crispEdges;
 }
 
-div.explanationOne {
-  position: relative;
-  top: -760px;
-  right: -550px;
-  width: 250px;
-}
-
-div.explanationTwo {
-  position: relative;
-  top: -740px;
-  right: -550px;
-  width: 250px;
-}
-
-div.explanationThree {
-  position: relative;
-  top: -720px;
-  right: -550px;
-  width: 250px;
-}
-
-div.legendTitle{
-  position: relative;
-  top: -1300px;
-  right: -590px;
-  width: 250px;
-}
-
+.legend{}
 
 </style>
 <body>
 <div class="title">Georgia lags in flu vaccination rates</div>
-<div class="subtitle">Georgia brought down the national flu vaccination rate during the 2012-2103 season.</div>
+<div class="subtitle">Georgia brought down the national flu vaccination rate during the 2012-2103 season.<br><br></div>
 
-<p class="chart">
+
+<div class="explainer">
+Georgians face some of the same barriers to a flu shot as people in the rest of the country, like getting time off work to take the family for their immunization, according to the Georgia Department of Public Health. Pregnant women are a special concern as 41 Georgia counties have no OB service.<br><br>
+
+This school year, the DPH is repeating a school-based program that nearly doubled the number of K-12-age children vaccinated in 2012-2013. County health departments partner with community groups, places of worship and employers to deploy shots at convenient, accesible times and places.<br><br>
+
+The DPH advises everyone over the age of 6 months to get an annual flu shot.
+<br><br>
+</div>
+
+<div>Click to see how your demographic stacks up:</div>
+
+<p class = "legendHolder"> </p>
+
+<p class="chart"></p>
+
 <p class="footer">
+
+<br>
+<br>
 
   May, 2013 cumulative flu vaccination rate for the 2012-2013 flu season. Vaccination coverage estimates by State National Immunization Survey (NIS) and Behavioral Risk Factor Surveillance System (BRFSS), 2012–13 influenza season.
 <br>
@@ -69,6 +59,9 @@ Source: <a href="http://www.cdc.gov/flu/fluvaxview/coverage-1213estimates.htm" t
 <br><br>
 Methodology: 
 The data above was downlaoded Sept. 9 from the CDC as a spreadsheet, concatenated and refined using Python, then filtered and graphed with Javascript.
+<br>
+<br>
+* CDC reports insufficient data
 
 <script>document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1"></' + 'script>')</script>
 <script src="http://d3js.org/d3.v2.min.js?2.9.1"></script>
@@ -79,8 +72,9 @@ console.log("ok");
 
 // ************ DECLARATIONS
 
-var margin = {top: 10, right: 0, bottom: 10, left: 10},
-    width = 768 - margin.left - margin.right,
+var margin = {top: 10, right: 100, bottom: 10, left: 10},
+    width = window.innerWidth,
+    width = width - margin.left - margin.right,
     height = (width * 1.3) - margin.top - margin.bottom;
 
 
@@ -89,7 +83,7 @@ var states,
 
 var x = d3.scale.linear()
     .domain([0, 100])// Don't use max function. Hardcode 100 b/c 100 is the real-life maximum vaccination rate.
-    .range([0, width-150]);
+    .range([0, width]);
 
 var y = d3.scale.ordinal()
     .rangeRoundBands([0, height], .1);
@@ -112,6 +106,8 @@ var svg = d3.select(".chart").append("svg")
 svg.append("g")
     .attr("class", "x axis");
 
+
+
 // ******** END DECLARATIONS
 
 // ********* LOAD DATA, SORT & FILTER
@@ -130,13 +126,6 @@ d3.csv("flu_vaccination.csv", function(data) {
   // to re-add, just delete the delete line
   // and adjust some of the titles so they can squeeze in
   data.forEach( function (d, i) { 
-    delete d['13 - 17'],
-    delete d['5 to 12'],
-    delete d['6 months - 4 yrs'],
-    delete d['50 - 64'],
-    delete d['18 - 49'],
-    delete d['18 - 49 at high risk'],
-    delete d['18-64 at high risk'],
     d['All persons 6 months +'] = d['6 months and up, all persons'],
     d['Hispanic, 6 months +'] = d['6 months and up, hispanic'],
     d['Black, 6 months +'] = d['6 months and up, black'],
@@ -173,20 +162,24 @@ default_age = "6 months - 17 years"; // initialize the age to be graphed
 
   //******** LEGEND
 
+  d3.select("window").on("resize", resize);
 
+  var legendHolder = d3.select(".legendHolder").append("svg").attr("height", height*0.13);
 
-  var legend = svg.selectAll(".legend")
+  var legend = legendHolder.selectAll(".legend")
     .data(color.domain().slice())
       .enter().append("g")
       .attr("class", "legend")
-      // move legend up and down
-      .attr("transform", function(d, i) {return "translate(0," + (i+4) *20 + ")"; });
-
+      .attr("transform", 
+          function (d, i) 
+          {if (i%2)
+            { return "translate(" + width*0.39 + "," + i*(height*0.013)  + ")";} // space horizontal & vertical
+            { return "translate(" + width*0.05  +  "," + i*(height*0.013) + ")";} 
+          });
 
   legend.append("rect")
-      .attr("x", width*0.975) // move leged left and right
-      .attr("width", 18)
-      .attr("height", 18)
+      .attr("width", width*0.03)
+      .attr("height", width*0.03)
       .style("fill", color)      
       .on("click", function (d) {
         default_age = d; // reset the age we'll draw with to whatever we click on
@@ -194,30 +187,14 @@ default_age = "6 months - 17 years"; // initialize the age to be graphed
 
 
   legend.append("text")
-      .attr("x", width*0.965)
-      .attr("y", 9)
-      .attr("dy", ".35em")
-      .style("text-anchor", "end")
+      .attr("dy", "1em")
+      .attr("dx", width*0.04)
+      .style("text-anchor", "start")
       .text(function (d) {return d; })
       .on("click", function (d) {
         default_age = d;
         return change();});
 
-  var explanationOne = d3.select("body").append("div")
-    .attr("class", "explanationOne")
-    .text("Georgians face some of the same barriers to a flu shot as people in the rest of the country, like getting time off work to take the family for their immunization, according to the Georgia Department of Public Health. Pregnant women are a special concern as 41 Georgia counties have no OB service.");
-
-  var explanationTwo = d3.select("body").append("div")
-    .attr("class", "explanationTwo")
-    .text("This school year, the DPH is repeating a school-based program that nearly doubled the number of K-12-age children vaccinated in 2012-2013. County health departments partner with community groups, places of worship and employers to deploy shots at convenient, accesible times and places.");
-
-  var explanationThree = d3.select("body").append("div")
-    .attr("class", "explanationThree")
-    .text("The DPH advises everyone over the age of 6 months to get an annual flu shot.");
-
-  var legendTitle = d3.select("body").append("div")
-    .attr("class", "legendTitle")
-    .text("Click to see how your demographic stacks up");
 
 
   
@@ -228,7 +205,8 @@ var altKey;
 
 d3.select(window)
     .on("keydown", function() { altKey = d3.event.altKey; })
-    .on("keyup", function() { altKey = false; });
+    .on("keyup", function() { altKey = false; })
+    .on("resize", resize);
 
 // ******** CHANGE FUNCTION
 
@@ -275,6 +253,13 @@ function redraw() {
         {return d.State;}
       });
 
+  barEnter.append("text") // This sets up to add "*" when there is N/A
+    .attr("class", "footnote")
+    .attr("x", -3)
+    .attr("y", y.rangeBand()/2)
+    .attr("dy", ".35em")
+    .attr("text-anchor", "start");
+
       
   // first transition done, now drawing updated bar
   
@@ -293,7 +278,16 @@ function redraw() {
       .attr("fill-opacity", function (d) {
         if (d.State == "United States") {return 0.6;} ;});// Highlight U.S. average
       
-     
+  barUpdate.select("text.footnote") // this adds "*" where there is N/A
+    .attr("x", function (d) {
+      return x(d[age]);
+    })
+    .text(function (d) {
+      if(d[age] == "") {return "*";}
+      else {return "";}
+    });
+
+
   // now wiping away bars
 
   var barExit = d3.transition(bar.exit())
@@ -314,6 +308,17 @@ function redraw() {
       .call(xAxis);
 }
 // ****** END DRAW FUNCTION
+
+// ******** RESIZE FUNCTION
+
+function resize() {
+  width = window.innerWidth;
+  width = width - margin.left - margin.right;
+
+  x.range([0, width])
+
+}
+
 
 
 </script>
