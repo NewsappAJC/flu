@@ -2,7 +2,7 @@
 <html class="ocks-org do-not-copy">
 <meta charset="utf-8">
 <title>Flu Vaccination Rate</title>
-<head><link rel="stylesheet" type="text/css" href="flu_style.css" /></head> 
+<head><link rel="stylesheet" type="text/css" href="flu_style.css" /></head>
 
 <style>
 
@@ -57,7 +57,7 @@ Numbers reflect a 95% confidence interval with margin of error under 5 percent.
 <br>
 Source: <a href="http://www.cdc.gov/flu/fluvaxview/coverage-1213estimates.htm" target="_blank">http://www.cdc.gov/flu/fluvaxview/coverage-1213estimates.htm</a>
 <br><br>
-Methodology: 
+Methodology:
 The data above was downlaoded Sept. 9 from the CDC as a spreadsheet, concatenated and refined using Python, then filtered and graphed with Javascript.
 <br>
 <br>
@@ -94,7 +94,7 @@ var xAxis = d3.svg.axis()
     .tickSize(-height - margin.bottom);
     //.tickFormat(format);
 
-var color = d3.scale.category10(); 
+var color = d3.scale.category10();
 
 var svg = d3.select(".chart").append("svg")
     .attr("width", width + margin.left + margin.right)
@@ -113,35 +113,6 @@ svg.append("g")
 // ********* LOAD DATA, SORT & FILTER
 
 d3.csv("flu_vaccination.csv", function(data) {
-  // first, whittle down the data & clean up the labels
-  // ?? OR FILTER & CUT IN .CSV for quick load sake ?? 
-
-  // filter out data series for the 10 CDC regions. We just want the states.
-  data = data.filter(function (d) {
-    if (d.State.indexOf("Region") > -1) {return false;}
-    {return true;} 
-  });
-
-  //cut extraneous columns
-  // to re-add, just delete the delete line
-  // and adjust some of the titles so they can squeeze in
-  data.forEach( function (d, i) { 
-    d['All persons 6 months +'] = d['6 months and up, all persons'],
-    d['Hispanic, 6 months +'] = d['6 months and up, hispanic'],
-    d['Black, 6 months +'] = d['6 months and up, black'],
-    d['White, 6 months +'] = d['6 months and up, white'],
-    d['Multiple or other race, 6 months +'] = d['6 months and up, mutliple or other race']
-    
-  ;})
-
-  data.forEach (function (d, i) {
-    delete d['6 months and up, mutliple or other race'],
-    delete d['6 months and up, all persons'],
-    delete d['6 months and up, hispanic'],
-    delete d['6 months and up, black'],
-    delete d['6 months and up, white']
-
-  ;})
 
   states = data;
 
@@ -178,9 +149,13 @@ default_age = "6 months - 17 years"; // initialize the age to be graphed
           });
 
   legend.append("rect")
+<<<<<<< HEAD
       .attr("width", width*0.03)
-      .attr("height", width*0.03)
-      .style("fill", color)      
+      .attr("height", width*0.03)     
+=======
+      .attr("width", 18)
+      .attr("height", 18)
+      .style("fill", color)
       .on("click", function (d) {
         default_age = d; // reset the age we'll draw with to whatever we click on
         return change();}); //then call the change function
@@ -197,7 +172,7 @@ default_age = "6 months - 17 years"; // initialize the age to be graphed
 
 
 
-  
+
   redraw();
 }); // CLOSE INITIAL FUNCTION
 
@@ -225,7 +200,7 @@ function redraw() {
     top = states.sort(function(a, b) { return b[age1] - a[age1]; });
 
   y.domain(top.map(function(d) { return d.State; }));
-  
+
   var bar = svg.selectAll(".bar")
       .data(top, function(d) { return d.State; })
       .attr("class", "bar");
@@ -238,7 +213,7 @@ function redraw() {
       .style("fill-opacity", 0); // this is when it's flipping around
 
   barEnter.append("rect")
-      .attr("width", 50) 
+      .attr("width", 50)
       .attr("height", y.rangeBand());
 
   barEnter.append("text")
@@ -253,6 +228,7 @@ function redraw() {
         {return d.State;}
       });
 
+<<<<<<< HEAD
   barEnter.append("text") // This sets up to add "*" when there is N/A
     .attr("class", "footnote")
     .attr("x", -3)
@@ -262,21 +238,22 @@ function redraw() {
 
       
   // first transition done, now drawing updated bar
-  
+
   age = age1;
 
   var barUpdate = d3.transition(bar)
       //transform it a little further right for the labels
       .attr("transform", function(d) { return "translate(80," + (d.y0 = y(d.State)) + ")"; })
-      .style("fill-opacity", 1.0); // this is the default 
+      .style("fill-opacity", 1.0); // this is the default
 
-  barUpdate.select("rect")   
+  barUpdate.select("rect")
       .attr("width", function (d) { return x(d[age]);})
       .attr("fill", function (d) {
         if (d.State == "Georgia") {return "goldenrod";} // Highlight Georgia
         else {return color(age); } ;})
       .attr("fill-opacity", function (d) {
         if (d.State == "United States") {return 0.6;} ;});// Highlight U.S. average
+
       
   barUpdate.select("text.footnote") // this adds "*" where there is N/A
     .attr("x", function (d) {
@@ -288,11 +265,12 @@ function redraw() {
     });
 
 
+
   // now wiping away bars
 
   var barExit = d3.transition(bar.exit())
       .attr("transform", function(d) { return "translate(0," + (d.y0 + height) + ")"; })
-      .style("fill-opacity", 1) //this is when it's flipping around 
+      .style("fill-opacity", 1) //this is when it's flipping around
       .remove();
 
   barExit.select("rect")
