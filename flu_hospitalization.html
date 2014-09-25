@@ -1,12 +1,11 @@
 
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>Rate by demographic</title>
+<title>Hospital visits for flu-like illness</title>
 <head><link rel="stylesheet" type="text/css" href="flu_style.css" /></head> 
 
 
 <style>
-
 
 .axis path,
 .axis line {
@@ -16,8 +15,8 @@
 }
 
 .x.axis path {
+  stroke: #000;
   fill:none;
-  stroke:#000;
   shape-rendering: crispEdges;
 }
 
@@ -27,25 +26,28 @@ font-size: 12px;
 
 .line {
   fill: none;
-  stroke-width: 2.0px;
+  stroke-width: 3.0px;
 }
 
-.commentHolder{
-  position: relative;
-  top: -560px;
-  right: -150px;
-  width: 500px;
+
+
+.explainer{
+  position: absolute;
+  top: 200px;
+  right: 300px;
+  font-size: 14px;
+  width: 600px;
   opacity: 0;
-  font-size: 12px;
 
 }
 
 </style>
 <div class="title">Hospital visits for flu-like illness in the South</div>
+<div class="subtitle">One of the ways to see the severity of a flu season is to count the percent of hospital visits that are for "flu-like symptoms."  But the type of flu and who it hits are also part of the story.  Hover over the legend or lines to learn more.</div>
 
-<div class="subtitle">One of the ways to see the severity of a flu season is to count the percent of hospital visits that are for "flu-like symptoms."  But the type of flu and who it hits are also part of the story.  Click on the legend or lines to learn more.</div>
+<p class = "legendHolder"></p>
 
-
+<p class="explainerHolder"></p>
 
 <p class="chart">
 <p class="footer"> 
@@ -77,30 +79,34 @@ console.log("ok");
 
 //YEAR,  WEEK,  ILITOTAL,  TOTAL PATIENTS,  NUM OF PROVIDERS,  PERCENT_WEIGHTED_ILI,  PERCENT_UNWEIGHTED_ILI
 
-var margin = {top: 20, right: 10, bottom: 40, left: 50},
-    width = 768 - margin.left - margin.right,
-    height = (width*0.66) - margin.top - margin.bottom;
-
-var labelConverter = d3.scale.ordinal() // called on xAxis
-  .domain([0, 52])
-  .range(["Aug.", "Sept.", "Oct.", "Nov.", "Dec.", "Jan.", "Feb.", "Mar.", "Apr.", "May", "Jun.", "July"]);
+var margin = {top: 20, right: 20, bottom: 30, left: 40},
+    // width = window.innerWidth,
+    // width = width - margin.left - margin.right,
+    width = 768,
+    height = (width*0.4) - margin.top - margin.bottom;
 
 var x = d3.scale.linear()
    .domain([0, 52])
    .range([0, width]);
 
 var y = d3.scale.linear()
-    .range([height, 0])
-    .domain([0, 9]);
+    .domain([0, 7])
+    .range([height, 0]);
+    
+var x_axis_labels = d3.scale.ordinal() // called on xAxis
+  .rangePoints([0, width])
+  .domain([" Aug.", " Sept.", " Oct.", " Nov.", " Dec.", " Jan.", " Feb.", " Mar.", " Apr.", " May", " June", " July"]);
 
 var xAxis = d3.svg.axis()
-    .scale(x)
-    .orient("bottom")
-    .ticks(13)    
-    .tickFormat(function (d, i) {return labelConverter(i);} );  // make Aug, Sept, etc appear instead of numbers
+    .scale(x_axis_labels)
+    .tickSize(0)
+    .orient("bottom") 
+    .ticks(12);
 
 var yAxis = d3.svg.axis()
   .scale(y)
+  .tickSize(0)
+
   .orient("left");
 
 var svg = d3.select(".chart").append("svg")
@@ -116,31 +122,37 @@ var line = d3.svg.line()
 
 var color = d3.scale.category10();
 
-var zeronine_ten_string = d3.select("body").append("div")
-  .attr("class", "zeronine_ten" + " commentHolder" )
-  .text("Flu peaked early, in October. The DPH also saw unusual summer flu activity. They blame it on the then-novel 2009 H1N1 virus.");
-
-
-var twelve_thirteen_string = d3.select("body").append("div")
-  .attr("class", "twelve_thirteen" + " commentHolder")
-  .text("The severe H3N2 virus predominated nationwide, according to the CDC, leading to higher rates of hospitlization and death than in recent years.");
-
-var thirteen_fourteen_string = d3.select("body").append("div")
-  .attr("class", "thirteen_fourteen" + " commentHolder")
-  .text("In Georgia, the 2009 H1N1 particularly impacted healthy young adults, according to the DPH.");
-
-
-var ten_eleven_string = d3.select("body").append("div")
-  .attr("class", "ten_eleven" + " commentHolder")
-  .text("In early 2011, more of the positive flu tests the CDC saw were part of the H3 group, which is associated with more severe illness.");
-
-var zeroeight_zeronine_string = d3.select("body").append("div")
-  .attr("class", "zeroeight_zeronine" + " commentHolder")
+var y2008_2009_string = d3.select(".explainerHolder").append("div")
+  .attr("id", "y2008-2009")
+  .attr("class", "explainer")
   .text("The novel 2009 H1N1 virus began appearing in the south in May.");
 
-var eleven_twelve_string = d3.select("body").append("div")
-  .attr("class", "eleven_twelve" + " commentHolder")
+var y2009_2010_string = d3.select(".explainerHolder").append("div")
+  .attr("id", "y2009-2010")
+  .attr("class", "explainer")
+  .text("Flu peaked early, in October. The DPH also saw unusual summer flu activity. They blame it on the then-novel 2009 H1N1 virus.");
+
+var y2010_2011_string = d3.select(".explainerHolder").append("div")
+  .attr("id", "y2010-2011")
+  .attr("class", "explainer")
+  .text("In early 2011, more of the positive flu tests the CDC saw were part of the H3 group, which is associated with more severe illness.");
+
+var y2011_2012_string = d3.select(".explainerHolder").append("div")
+  .attr("id", "y2011-2012")
+  .attr("class", "explainer")
   .text("The predominant flu varied by region in 2011-2012. Hospitalization rates were lower than the year previous for all age groups.");
+
+var y2012_2013_string = d3.select(".explainerHolder").append("div")
+  .attr("id", "y2012-2013")
+  .attr("class", "explainer")
+  .text("The severe H3N2 virus predominated nationwide, according to the CDC, leading to higher rates of hospitlization and death than in recent years.");
+
+var y2013_2014_string = d3.select(".explainerHolder").append("div")
+  .attr("id", "y2013-2014")
+  .attr("class", "explainer")
+  .text("In Georgia, the H1N1 that first appeared in 2009 particularly impacted healthy young adults, according to the DPH.");
+
+
 
 // ***** convert week enumeration into something we can use *******
 // I want x=0 to be September, not January ... so that we keep the winter months, the flu months, together
@@ -164,18 +176,6 @@ function seasonAssigner(num1, num2) {
   else {return num2 + "-" + (num2+1);}
 ;}
 
-function classAssigner(some_str) { // alas you cant have numbers in a class name
-  if (some_str == "2007-2008") {return "zeroseven_zeroeight";}
-  if (some_str == "2008-2009") {return "zeroeight_zeronine";}
-  if (some_str == "2009-2010") {return "zeronine_ten";}
-  if (some_str == "2010-2011") {return "ten_eleven";}
-  if (some_str == "2011-2012") {return "eleven_twelve";}
-  if (some_str == "2012-2013") {return "twelve_thirteen";}
-  if (some_str == "2013-2014") {return "thirteen_fourteen";}
-  if (some_str == "2014-2015") {return "fourteen_fifteen";}
-}
-
-
 // ***** close week enumeration converter ********
 
 // ********* LOAD DATA
@@ -184,14 +184,11 @@ function classAssigner(some_str) { // alas you cant have numbers in a class name
 d3.csv("flu_hospitalization.csv", function (south_error, south_data){
 
 
-
 color.domain(d3.keys(south_data[0]).filter(function(key) {return key == 'YEAR'; }));
 
 
-
-
   south_data.forEach(function (d) {
-    d.rate = +d.PERCENT_WEIGHTED_ILI,
+    d.rate = +d.RATE,
     d.calendar_week = +d.WEEK,
     d.seasonal_week = seasonWeek(+d.WEEK),
     d.year = +d.YEAR,
@@ -199,42 +196,35 @@ color.domain(d3.keys(south_data[0]).filter(function(key) {return key == 'YEAR'; 
     d.region = d.REGION; 
   });
 
-    south_data.forEach(function (d) {
-      if (d.season == "2008-2019") {d.explainer = zeroeight_zeronine_string; }
-    });
-
-console.log(south_data)
-
   //nest data by season
-
 
   south_data = d3.nest()
     .key(function (d) {return d.season; })
     .entries(south_data);
 
-
   //draw
+
+  console.log(south_data);
 
 
   var south_seasons = svg.selectAll(".season")
     .data(south_data, function (d) {return d.key; })
     .enter().append("g")
-    .attr('class', function (d) {return classAssigner(d.key) + " line"; });
+    .attr("id", function (d) {return "y" + d.key;}) 
+    .attr('class', 'line');
 
   south_seasons.append("path")
     .attr("class", "line")
-    .attr("opacity", 1.0)
+    .attr("opacity", 0.5)
     .attr("d", function (d) { return line(d.values); })
     .style("stroke", function (d) {return color(d.key); })
-            .on("mouseover", function (d){
-          d3.selectAll("." + classAssigner(d.key) + " .line").style("stroke", "black").style("stroke-width", "5px")
-          d3.selectAll("." + classAssigner(d.key) + ".commentHolder").style("opacity", 1);
-          
-        })
+        .on("mouseover", function (d) {
+          d3.selectAll("#y" + d.key).select(".line").transition().delay(100).style("stroke-width", "5").style("opacity", 1); 
+          d3.selectAll("div#y" + d.key).transition().delay(100).style("opacity", 1); })
         .on("mouseout", function (d) {
-           d3.selectAll("." + classAssigner(d.key) + " .line").style("stroke", function (k) {return color(k.key)}).style("stroke-width", "1.5px")
-           d3.selectAll("." + classAssigner(d.key) + ".commentHolder").style("opacity", 0);
-        });
+          d3.selectAll("#y" + d.key).select(".line").transition().delay(200).style("stroke-width", "2").style("opacity", 0.5) ;
+          d3.selectAll("div#y" + d.key).transition().delay(100).style("opacity", 0); });
+  
 
   // Add axes
   svg.append("g")
@@ -251,45 +241,51 @@ console.log(south_data)
       .attr("x", 0-height/2)
       .attr("dy", "1em")
       .style("text-anchor", "middle")
-      .text("percent of visits for influenza-like symptoms")
+      .text("percent of hospital visits for influenza-like symptoms")
+
+  // add expainer
 
   // add legend
 
+  var legendHolder = d3.select(".legendHolder").append("svg").attr("height", ((height*0.5) - margin.top - margin.bottom));
 
       
-  var legend = svg.selectAll('.legend')
+  var legend = legendHolder.selectAll('.legend')
         .data(south_data, function (d) {return d.key;})
         .enter()
       .append('g')
-        .attr('class', function (d) {return classAssigner(d.key) + " legend"; });
+        .attr("class", "legend")
+        .attr("transform", 
+          function (d, i) 
+          {if (i%2)
+            { return "translate(" + width*0.39 + "," + (10*i)  + ")";} // space horizontal & vertical
+            { return "translate(" + width*0.05  +  "," + (10*(i+1)) + ")";} 
+          });
 
     legend.append('rect')
-        .attr('x', width - 70)
-        .attr('y', function(d, i){ return i *  20;})
-        .attr('width', 18)
-        .attr('height', 4)
+        .attr("width", width*0.03)
+        .attr("height", width*0.007)     
         .style('fill', function(d) {return color(d.key); })
-        .on("mouseover", function (d){
-          d3.selectAll("." + classAssigner(d.key) + " .line").style("stroke", "black").style("stroke-width", "5px")
-          d3.selectAll("." + classAssigner(d.key) + ".commentHolder").style("opacity", 1);
+        .on("mouseover", function (d) {
+          d3.selectAll("#y" + d.key).select(".line").transition().delay(100).style("stroke-width", "5").style("opacity", 1); 
+          d3.selectAll("div#y" + d.key).transition().delay(100).style("opacity", 1); 
         })
         .on("mouseout", function (d) {
-           d3.selectAll("." + classAssigner(d.key) + " .line").style("stroke", function (k) {return color(k.key)}).style("stroke-width", "1.5px")
-           d3.selectAll("." + classAssigner(d.key) + ".commentHolder").style("opacity", 0);
+          d3.selectAll("#y" + d.key).select(".line").transition().delay(200).style("stroke-width", "2").style("opacity", 0.5) ;
+          d3.selectAll("div#y" + d.key).transition().delay(100).style("opacity", 0); 
         });
 
-    legend.append('text')
-        .attr('x', width - 50)
-        .attr('y', function(d, i){ return (i *  20) + 6;})
-        .text(function(d){ return d.key; })
-        .on("mouseover", function (d){
-          d3.selectAll("." + classAssigner(d.key) + " .line").style("stroke", "black").style("stroke-width", "5px")
-          d3.selectAll("." + classAssigner(d.key) + ".commentHolder").style("opacity", 1);
-        })
+      legend.append("text")
+        .attr("dy", "0.5em")
+        .attr("dx", width*0.04)
+        .style("text-anchor", "start")
+        .text(function (d) {return d.key; })
+        .on("mouseover", function (d) {
+          d3.selectAll("#y" + d.key).select(".line").transition().delay(100).style("stroke-width", "5").style("opacity", 1); 
+          d3.selectAll("div#y" + d.key).transition().delay(100).style("opacity", 1); })
         .on("mouseout", function (d) {
-           d3.selectAll("." + classAssigner(d.key) + " .line").style("stroke", function (k) {return color(k.key)}).style("stroke-width", "1.5px")
-           d3.selectAll("." + classAssigner(d.key) + ".commentHolder").style("opacity", 0);
-        });
+          d3.selectAll("#y" + d.key).select(".line").transition().delay(200).style("stroke-width", "2").style("opacity", 0.5) ;
+          d3.selectAll("div#y" + d.key).transition().delay(100).style("opacity", 0); });
 
 
 });
