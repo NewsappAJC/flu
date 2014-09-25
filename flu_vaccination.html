@@ -21,13 +21,11 @@
   shape-rendering: crispEdges;
 }
 
-.legend{}
 
 </style>
 <body>
 <div class="title">Georgia lags in flu vaccination rates</div>
 <div class="subtitle">Georgia brought down the national flu vaccination rate during the 2012-2103 season.<br><br></div>
-
 
 <div class="explainer">
 Georgians face some of the same barriers to a flu shot as people in the rest of the country, like getting time off work to take the family for their immunization, according to the Georgia Department of Public Health. Pregnant women are a special concern as 41 Georgia counties have no OB service.<br><br>
@@ -106,8 +104,6 @@ var svg = d3.select(".chart").append("svg")
 svg.append("g")
     .attr("class", "x axis");
 
-
-
 // ******** END DECLARATIONS
 
 // ********* LOAD DATA, SORT & FILTER
@@ -149,12 +145,8 @@ default_age = "6 months - 17 years"; // initialize the age to be graphed
           });
 
   legend.append("rect")
-<<<<<<< HEAD
       .attr("width", width*0.03)
       .attr("height", width*0.03)     
-=======
-      .attr("width", 18)
-      .attr("height", 18)
       .style("fill", color)
       .on("click", function (d) {
         default_age = d; // reset the age we'll draw with to whatever we click on
@@ -180,8 +172,7 @@ var altKey;
 
 d3.select(window)
     .on("keydown", function() { altKey = d3.event.altKey; })
-    .on("keyup", function() { altKey = false; })
-    .on("resize", resize);
+    .on("keyup", function() { altKey = false; });
 
 // ******** CHANGE FUNCTION
 
@@ -228,7 +219,6 @@ function redraw() {
         {return d.State;}
       });
 
-<<<<<<< HEAD
   barEnter.append("text") // This sets up to add "*" when there is N/A
     .attr("class", "footnote")
     .attr("x", -3)
@@ -293,7 +283,7 @@ function resize() {
   width = window.innerWidth;
   width = width - margin.left - margin.right;
 
-  x.range([0, width])
+  x.range([0, width]);
 
 }
 
