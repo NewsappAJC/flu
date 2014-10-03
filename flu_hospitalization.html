@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <title>Hospital visits for flu-like illness</title>
-<head><link rel="stylesheet" type="text/css" href="flu_style.css" /></head> 
+<head><link rel="stylesheet" type="text/css" href="flu_style.css" /></head>
 
 
 <style>
@@ -56,7 +56,7 @@ font-size: 12px;
 <p class="explainerHolder"></p>
 
 <p class="chart">
-<p class="footer"> 
+<p class="footer">
   This graph includes Region 4, as defined by the Department of Health and Human Services: Alabama, Florida, Georgia, Kentucky, Mississippi, North Carolina, South Carolina and Tennessee.
   <br><br>
   Percentage of visits for influenza-like illness reported by the U.S. Outpatient Influenza-like Illness Surveillance Network (ILINet), weekly national summary, selected seasons.<br><br>
@@ -86,9 +86,9 @@ console.log("ok");
 //YEAR,  WEEK,  ILITOTAL,  TOTAL PATIENTS,  NUM OF PROVIDERS,  PERCENT_WEIGHTED_ILI,  PERCENT_UNWEIGHTED_ILI
 
 var margin = {top: 20, right: 20, bottom: 30, left: 40},
-    // width = window.innerWidth,
-    // width = width - margin.left - margin.right,
-    width = 768,
+    width = window.innerWidth - 20,
+    width = width - margin.left - margin.right,
+    // width = 768,
     height = (width*0.4) - margin.top - margin.bottom;
 
 var x = d3.scale.linear()
@@ -98,7 +98,7 @@ var x = d3.scale.linear()
 var y = d3.scale.linear()
     .domain([0, 7])
     .range([height, 0]);
-    
+
 var x_axis_labels = d3.scale.ordinal() // called on xAxis
   .rangePoints([0, width])
   .domain([" Aug.", " Sept.", " Oct.", " Nov.", " Dec.", " Jan.", " Feb.", " Mar.", " Apr.", " May", " June", " July"]);
@@ -106,7 +106,7 @@ var x_axis_labels = d3.scale.ordinal() // called on xAxis
 var xAxis = d3.svg.axis()
     .scale(x_axis_labels)
     .tickSize(0)
-    .orient("bottom") 
+    .orient("bottom")
     .ticks(12);
 
 var yAxis = d3.svg.axis()
@@ -163,7 +163,7 @@ var y2013_2014_string = d3.select(".explainerHolder").append("div")
 // ***** convert week enumeration into something we can use *******
 // I want x=0 to be September, not January ... so that we keep the winter months, the flu months, together
 // Flu season starts about week 30
-// But weeks are numbered in their data .range([0, 52])  
+// But weeks are numbered in their data .range([0, 52])
 // How to graph ([30, 29_of_the_next_year])?
 // How about convert the first week in January to Week 53?
 // So range = ([30 - 82])
@@ -176,7 +176,7 @@ function seasonWeek(some_num) {
 ;}
 
 function seasonAssigner(num1, num2) {
-  // numb 1 is calendar week, num 2 is year 
+  // numb 1 is calendar week, num 2 is year
   //output is a string representing the flu season, like "2008 2009"
   if (num1 < 31) {return (num2 -1) + "-" + num2;}
   else {return num2 + "-" + (num2+1);}
@@ -186,7 +186,7 @@ function seasonAssigner(num1, num2) {
 
 // ********* LOAD DATA
 
-//CATCHMENT, NETWORK, SEASON,  MMWR-YEAR, MMWR-WEEK, AGE, CATEGORY,  RATE 
+//CATCHMENT, NETWORK, SEASON,  MMWR-YEAR, MMWR-WEEK, AGE, CATEGORY,  RATE
 d3.csv("flu_hospitalization.csv", function (south_error, south_data){
 
 
@@ -199,7 +199,7 @@ color.domain(d3.keys(south_data[0]).filter(function(key) {return key == 'YEAR'; 
     d.seasonal_week = seasonWeek(+d.WEEK),
     d.year = +d.YEAR,
     d.season = seasonAssigner(d.calendar_week, d.year)
-    d.region = d.REGION; 
+    d.region = d.REGION;
   });
 
   //nest data by season
@@ -216,7 +216,7 @@ color.domain(d3.keys(south_data[0]).filter(function(key) {return key == 'YEAR'; 
   var south_seasons = svg.selectAll(".season")
     .data(south_data, function (d) {return d.key; })
     .enter().append("g")
-    .attr("id", function (d) {return "y" + d.key;}) 
+    .attr("id", function (d) {return "y" + d.key;})
     .attr('class', 'line');
 
   south_seasons.append("path")
@@ -225,12 +225,12 @@ color.domain(d3.keys(south_data[0]).filter(function(key) {return key == 'YEAR'; 
     .attr("d", function (d) { return line(d.values); })
     .style("stroke", function (d) {return color(d.key); })
         .on("mouseover", function (d) {
-          d3.selectAll("#y" + d.key).select(".line").transition().delay(100).style("stroke-width", "5").style("opacity", 1); 
+          d3.selectAll("#y" + d.key).select(".line").transition().delay(100).style("stroke-width", "5").style("opacity", 1);
           d3.selectAll("div#y" + d.key).transition().delay(100).style("opacity", 1); })
         .on("mouseout", function (d) {
           d3.selectAll("#y" + d.key).select(".line").transition().delay(200).style("stroke-width", "2").style("opacity", 0.5) ;
           d3.selectAll("div#y" + d.key).transition().delay(100).style("opacity", 0); });
-  
+
 
   // Add axes
   svg.append("g")
@@ -253,32 +253,36 @@ color.domain(d3.keys(south_data[0]).filter(function(key) {return key == 'YEAR'; 
 
   // add legend
 
-  var legendHolder = d3.select(".legendHolder").append("svg").attr("height", ((height*0.5) - margin.top - margin.bottom));
+  var legendHolder = d3.select(".legendHolder").append("svg")
+    .attr("height", ((height*0.5) - margin.top - margin.bottom))
+    .attr("width", width - margin.right - margin.left);
 
-      
+
   var legend = legendHolder.selectAll('.legend')
         .data(south_data, function (d) {return d.key;})
         .enter()
       .append('g')
         .attr("class", "legend")
-        .attr("transform", 
-          function (d, i) 
-          {if (i%2)
-            { return "translate(" + width*0.39 + "," + (10*i)  + ")";} // space horizontal & vertical
-            { return "translate(" + width*0.05  +  "," + (10*(i+1)) + ")";} 
+        .attr("transform", function (d, i) {
+          if (i%2) {
+            return "translate(" + width*0.39 + "," + (10*i)  + ")";
+            } // space horizontal & vertical
+            else {
+              return "translate(" + width*0.05  +  "," + (10*(i+1)) + ")";
+            }
           });
 
     legend.append('rect')
         .attr("width", width*0.03)
-        .attr("height", width*0.007)     
+        .attr("height", width*0.007)
         .style('fill', function(d) {return color(d.key); })
         .on("mouseover", function (d) {
-          d3.selectAll("#y" + d.key).select(".line").transition().delay(100).style("stroke-width", "5").style("opacity", 1); 
-          d3.selectAll("div#y" + d.key).transition().delay(100).style("opacity", 1); 
+          d3.selectAll("#y" + d.key).select(".line").transition().delay(100).style("stroke-width", "5").style("opacity", 1);
+          d3.selectAll("div#y" + d.key).transition().delay(100).style("opacity", 1);
         })
         .on("mouseout", function (d) {
           d3.selectAll("#y" + d.key).select(".line").transition().delay(200).style("stroke-width", "2").style("opacity", 0.5) ;
-          d3.selectAll("div#y" + d.key).transition().delay(100).style("opacity", 0); 
+          d3.selectAll("div#y" + d.key).transition().delay(100).style("opacity", 0);
         });
 
       legend.append("text")
@@ -287,17 +291,12 @@ color.domain(d3.keys(south_data[0]).filter(function(key) {return key == 'YEAR'; 
         .style("text-anchor", "start")
         .text(function (d) {return d.key; })
         .on("mouseover", function (d) {
-          d3.selectAll("#y" + d.key).select(".line").transition().delay(100).style("stroke-width", "5").style("opacity", 1); 
+          d3.selectAll("#y" + d.key).select(".line").transition().delay(100).style("stroke-width", "5").style("opacity", 1);
           d3.selectAll("div#y" + d.key).transition().delay(100).style("opacity", 1); })
         .on("mouseout", function (d) {
           d3.selectAll("#y" + d.key).select(".line").transition().delay(200).style("stroke-width", "2").style("opacity", 0.5) ;
           d3.selectAll("div#y" + d.key).transition().delay(100).style("opacity", 0); });
-
-
 });
-
-
-
 </script>
 
 
