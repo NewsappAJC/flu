@@ -36,7 +36,7 @@ The DPH advises everyone over the age of 6 months to get an annual flu shot.
 <br><br>
 </div>
 
-
+<!-- 
 <div>Click to see how your demographic stacks up:</div>
 
 <select id="choose-demographic">
@@ -49,10 +49,10 @@ The DPH advises everyone over the age of 6 months to get an annual flu shot.
   <option value="Black, 6 months +">Black, 6 months +</option>
   <option value="Multiple or other race, 6 months +">Multiple or other race, 6 months +</option>
   <option value="White, 6 months +">White, 6 months +</option>
-</select>
+</select> -->
 
 
-<p id="menu">Click to see you your demographic stacks up<br><select><select></p>
+<p id="menu">Click to see how your demographic stacks up<br><select><select></p>
 
 <p class="chart"></p>
 
@@ -135,36 +135,24 @@ d3.csv("flu_vaccination.csv", function(data) {
   });
 
   color.domain(ages);
-  default_age = "All persons 6 months +"; // initialize the age to be graphed
-
-  d3.select("#choose-demographic").on("change", function() {
-    default_age = d3.select(this).property("value");
-    return change();
-  })
-
+  
   states.forEach(function(state) {
     ages.forEach(function(age) {
       state[age] = state[age];
     });
   });
 
-   // menu.selectAll("option")
-   //    .data(ages)
-   //  .enter().append("option")
-   //    .text(function(d) { return d; });
+   menu.selectAll("option")
+      .data(ages)
+    .enter().append("option")
+      .text(function(d) { return d; });
 
   // ******* DATA SORTED, LOADED, FILTERED
 
   //******** LEGEND
 
   d3.select("window").on("resize", resize);
-<<<<<<< HEAD
 
-
-
-
-=======
->>>>>>> a064967ea4be98fa7ac1e23fdd6fcbf37936a6c4
   redraw();
 }); // CLOSE INITIAL FUNCTION
 
