@@ -36,9 +36,8 @@ The DPH advises everyone over the age of 6 months to get an annual flu shot.
 <br><br>
 </div>
 
-<div>Click to see how your demographic stacks up:</div>
 
-<p class = "legendHolder"> </p>
+<p id="menu">Click to see you your demographic stacks up<br><select><select></p>
 
 <p class="chart"></p>
 
@@ -104,6 +103,9 @@ var svg = d3.select(".chart").append("svg")
 svg.append("g")
     .attr("class", "x axis");
 
+var menu = d3.select("#menu select")
+  .on("change", change);
+
 // ******** END DECLARATIONS
 
 // ********* LOAD DATA, SORT & FILTER
@@ -125,42 +127,16 @@ default_age = "6 months - 17 years"; // initialize the age to be graphed
     });
   });
 
+   menu.selectAll("option")
+      .data(ages)
+    .enter().append("option")
+      .text(function(d) { return d; });
+
   // ******* DATA SORTED, LOADED, FILTERED
 
   //******** LEGEND
 
   d3.select("window").on("resize", resize);
-
-  var legendHolder = d3.select(".legendHolder").append("svg").attr("height", height*0.13);
-
-  var legend = legendHolder.selectAll(".legend")
-    .data(color.domain().slice())
-      .enter().append("g")
-      .attr("class", "legend")
-      .attr("transform", 
-          function (d, i) 
-          {if (i%2)
-            { return "translate(" + width*0.39 + "," + i*(height*0.013)  + ")";} // space horizontal & vertical
-            { return "translate(" + width*0.05  +  "," + i*(height*0.013) + ")";} 
-          });
-
-  legend.append("rect")
-      .attr("width", width*0.03)
-      .attr("height", width*0.03)     
-      .style("fill", color)
-      .on("click", function (d) {
-        default_age = d; // reset the age we'll draw with to whatever we click on
-        return change();}); //then call the change function
-
-
-  legend.append("text")
-      .attr("dy", "1em")
-      .attr("dx", width*0.04)
-      .style("text-anchor", "start")
-      .text(function (d) {return d; })
-      .on("click", function (d) {
-        default_age = d;
-        return change();});
 
 
 
@@ -187,7 +163,7 @@ function change() {
 
 function redraw() {
 
-    var age1 = default_age,
+    var age1 = menu.property("value"),
     top = states.sort(function(a, b) { return b[age1] - a[age1]; });
 
   y.domain(top.map(function(d) { return d.State; }));

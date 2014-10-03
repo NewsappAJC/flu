@@ -51,10 +51,10 @@ font-size: 12px;
 <div class="title">Hospital visits for flu-like illness in the South</div>
 <div class="subtitle">One of the ways to see the severity of a flu season is to count the percent of hospital visits that are for "flu-like symptoms."  But the type of flu and who it hits are also part of the story.  Hover over the legend or lines to learn more.</div>
 
-<p class = "legendHolder"></p>
-
+<p id="menu">Choose a flu season:<br><select></select></p>
+<div id="legend">
 <p class="explainerHolder"></p>
-
+</div>
 <p class="chart">
 <p class="footer"> 
   This graph includes Region 4, as defined by the Department of Health and Human Services: Alabama, Florida, Georgia, Kentucky, Mississippi, North Carolina, South Carolina and Tennessee.
@@ -128,6 +128,9 @@ var line = d3.svg.line()
 
 var color = d3.scale.category10();
 
+
+
+
 var y2008_2009_string = d3.select(".explainerHolder").append("div")
   .attr("id", "y2008-2009")
   .attr("class", "explainer")
@@ -157,6 +160,9 @@ var y2013_2014_string = d3.select(".explainerHolder").append("div")
   .attr("id", "y2013-2014")
   .attr("class", "explainer")
   .text("In Georgia, the H1N1 that first appeared in 2009 particularly impacted healthy young adults, according to the DPH.");
+
+var menu = d3.select("#menu select")
+    .on("change", change);
 
 
 
@@ -210,8 +216,6 @@ color.domain(d3.keys(south_data[0]).filter(function(key) {return key == 'YEAR'; 
 
   //draw
 
-  console.log(south_data);
-
 
   var south_seasons = svg.selectAll(".season")
     .data(south_data, function (d) {return d.key; })
@@ -247,74 +251,50 @@ color.domain(d3.keys(south_data[0]).filter(function(key) {return key == 'YEAR'; 
       .attr("x", 0-height/2)
       .attr("dy", "1em")
       .style("text-anchor", "middle")
-      .text("percent of hospital visits for influenza-like symptoms")
+      .text("percent of hospital visits for influenza-like symptoms");
 
+  menu.selectAll("option")
+    .data(south_data)
+    .enter().append("option")
+    .text(function (d, i) {return south_data[i].key; });
 
+menu.property("value", "2008-2009");
 
-  // add legend
-
-  var legendHolder = d3.select(".legendHolder").append("svg").attr("height", ((height*0.5) - margin.top - margin.bottom));
-
-      
-  var legend = legendHolder.selectAll('.legend')
-        .data(south_data, function (d) {return d.key;})
-        .enter()
-      .append('g')
-        .attr("class", "legend")
-        .attr("transform", 
-          function (d, i) 
-          {if (i%2)
-            { return "translate(" + width*0.39 + "," + (10*i)  + ")";} // space horizontal & vertical
-            { return "translate(" + width*0.05  +  "," + (10*(i+1)) + ")";} 
-          });
-
-    legend.append('rect')
-        .attr("width", width*0.03)
-        .attr("height", width*0.007)     
-        .style('fill', function(d) {return color(d.key); })
-        .on("mouseover", function (d) {
-          d3.selectAll("#y" + d.key).select(".line").transition().delay(100).style("stroke-width", "5").style("opacity", 1); 
-          d3.selectAll("div#y" + d.key).transition().delay(100).style("opacity", 1); 
-        })
-        .on("mouseout", function (d) {
-          d3.selectAll("#y" + d.key).select(".line").transition().delay(200).style("stroke-width", "2").style("opacity", 0.5) ;
-          d3.selectAll("div#y" + d.key).transition().delay(100).style("opacity", 0); 
-        });
-
-      legend.append("text")
-        .attr("dy", "0.5em")
-        .attr("dx", width*0.04)
-        .style("text-anchor", "start")
-        .text(function (d) {return d.key; })
-        .on("mouseover", function (d) {
-          d3.selectAll("#y" + d.key).select(".line").transition().delay(100).style("stroke-width", "5").style("opacity", 1); 
-          d3.selectAll("div#y" + d.key).transition().delay(100).style("opacity", 1); })
-        .on("mouseout", function (d) {
-          d3.selectAll("#y" + d.key).select(".line").transition().delay(200).style("stroke-width", "2").style("opacity", 0.5) ;
-          d3.selectAll("div#y" + d.key).transition().delay(100).style("opacity", 0); });
-
+redraw_lines();
 
 });
+
+function change(){
+  d3.transition()
+  .duration(500)
+  .each(redraw_lines);
+}
+
+function redraw_lines(){
+ console.log( d3.selectAll("#legend div"))
+ d3.selectAll("#legend div").transition().style("opacity", 0);
+
+  var temp_var = menu.property("value");
+
+  if (temp_var == "2008-2009") {(d3.selectAll("div#y2008-2009.explainer").transition().style("opacity", 1));}
+  if (temp_var == "2009-2010") {(d3.selectAll("div#y2009-2010.explainer").transition().style("opacity", 1));}
+  if (temp_var == "2010-2011") {(d3.selectAll("div#y2010-2011.explainer").transition().style("opacity", 1));}
+  if (temp_var == "2011-2012") {(d3.selectAll("div#y2011-2012.explainer").transition().style("opacity", 1));}
+  if (temp_var == "2012-2013") {(d3.selectAll("div#y2012-2013.explainer").transition().style("opacity", 1));}
+  if (temp_var == "2013-2014") {(d3.selectAll("div#y2013-2014.explainer").transition().style("opacity", 1));}
+
+
+
+  d3.selectAll(".line")
+  //console.log(menu.property("value"))
+  .style("opacity", function (d) {
+    if (d.key == menu.property("value")) {return 1;}
+    else {return 0.5;}
+  });
+}
+
 
 
 
 </script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
