@@ -33,12 +33,18 @@ font-size: 12px;
 
 .explainer{
   position: absolute;
-  top: 200px;
-  right: 300px;
   font-size: 14px;
-  width: 600px;
+  height: 20px;
   opacity: 0;
 
+
+}
+.explainerHolder {
+  position: relative;
+  left: 10px;
+  font-size: 14px;
+  height: 20px;
+  opacity: 1;
 }
 
 </style>
@@ -243,7 +249,7 @@ color.domain(d3.keys(south_data[0]).filter(function(key) {return key == 'YEAR'; 
       .style("text-anchor", "middle")
       .text("percent of hospital visits for influenza-like symptoms")
 
-  // add expainer
+
 
   // add legend
 
