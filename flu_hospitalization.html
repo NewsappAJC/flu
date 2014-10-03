@@ -254,7 +254,7 @@ color.domain(d3.keys(south_data[0]).filter(function(key) {return key == 'YEAR'; 
   // add legend
 
   var legendHolder = d3.select(".legendHolder").append("svg")
-    .attr("height", ((height*0.5) - margin.top - margin.bottom))
+    .attr("height", d3.max([(height*0.5) - margin.top - margin.bottom, 60]))
     .attr("width", width - margin.right - margin.left);
 
 
