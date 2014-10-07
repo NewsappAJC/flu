@@ -43,7 +43,7 @@ font-size: 12px;
   position: relative;
   left: 10px;
   font-size: 14px;
-  height: 20px;
+  min-height: 50px;
   opacity: 1;
 }
 
@@ -89,7 +89,7 @@ var margin = {top: 20, right: 20, bottom: 30, left: 40},
     width = window.innerWidth - 20,
     width = width - margin.left - margin.right,
     // width = 768,
-    height = (width*0.4) - margin.top - margin.bottom;
+    height = d3.max([(width*0.4) - margin.top - margin.bottom, 200]);
 
 var x = d3.scale.linear()
    .domain([0, 52])
