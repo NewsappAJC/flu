@@ -1,0 +1,15 @@
+{
+  "name": "my project",
+  "dependencies": {
+    "jquery": "1.11.1",
+    "json2": "latest",
+    "underscore": "latest",
+    "d3": "latest",
+    "backbone": "latest",
+    "d3bb": "https://jgperryajc@bitbucket.org/jgperryajc/d3bb.git"
+  },
+  "devDependencies": {
+    "jasmine": "latest",
+    "sinon": "latest"
+  }
+}

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]><html class="ie ie6" lang="en"> <![endif]-->
+<!--[if IE 7 ]><html class="ie ie7" lang="en"> <![endif]-->
+<!--[if IE 8 ]><html class="ie ie8" lang="en"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!--><html lang="en"> <!--<![endif]-->
+<head>
+
+	<!-- Basic Page Needs
+  ================================================== -->
+	<meta charset="utf-8">
+	<title>Your Page Title Here :)</title>
+	<meta name="description" content="">
+	<meta name="author" content="">
+
+	<!-- Mobile Specific Metas
+  ================================================== -->
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+	<!-- CSS
+  ================================================== -->
+	<link rel="stylesheet" href="style/app.css">
+	<link rel="stylesheet" href="style/skeleton.css">
+
+	<!--[if lt IE 9]>
+		<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+
+</head>
+<body>
+  <h1>My App</h1>
+
+  <script src="scripts/lib/flatpage_stubs.js"></script>
+  <script src="scripts/lib/jquery.js"></script>
+  <script src="scripts/lib/underscore.js"></script>
+  <script src="scripts/lib/backbone.js"></script>
+  <script src="scripts/lib/d3.js"></script>
+  <script src="scripts/lib/d3bb.js"></script>
+
+  <!-- build:js scripts/main.js -->
+	<script src="scripts/main.js"></script>
+  <!-- /build -->
+
+  <script>
+  // Have to add flatpage_stubs.js above this script
+  var i = 0;
+  document.body.onclick = function(e){
+    i += 1;
+    // Track in metrics
+    cmg.s_coxnews.utilities.track_event(42, null, ["eVar40", "interactive_myAppName"], ["prop42", "eVar42", "ajc"], "-- describe my interactive here --");
+
+    if(i === 3){
+      i = 0;
+      // Refresh ads
+      Adgeletti.refresh();
+    }
+  }
+  </script>
+</body>
+</html>

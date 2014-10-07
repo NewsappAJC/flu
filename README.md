@@ -1,4 +1,18 @@
-flu
-===
+# My Project
 
-Two flu graphs
+Description:
+
+Published:
+
+Lives here:
+
+Hosted here:
+
+## Dependencies
+
+## Notes
+
+## Todo
+
+- [ ] Get started
+- [ ] Do some stuff
