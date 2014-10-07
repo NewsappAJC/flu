@@ -1,0 +1,31 @@
+
+/*default font*/
+body {
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-size: 12px;
+}
+
+.title {
+	font-size: 36px;
+}
+
+.subtitle {
+	font-size: 18px;
+}
+
+.axis {
+	font-size: 10px;
+}
+
+.chart {
+	font-size: 12px;
+}
+
+.footer {
+	font-size: 12px;
+}
+
+.explainer {
+	font-size: 12px;
+}
+

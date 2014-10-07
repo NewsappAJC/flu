@@ -8,39 +8,7 @@ module.exports = function(grunt) {
         files: [
           {
             expand: true,
-            src: ['bower/jquery/dist/jquery.min.js'],
-            dest: 'build/scripts/lib/',
-            rename: function (dest, src) {
-              return dest + src.substring(src.lastIndexOf('/')).replace('.min','');
-            }
-          },
-          {
-            expand: true,
-            src: ['bower/underscore/underscore-min.js'],
-            dest: 'build/scripts/lib/',
-            rename: function (dest, src) {
-              return dest + src.substring(src.lastIndexOf('/')).replace('-min','');
-            }
-          },
-          {
-            expand: true,
-            src: ['bower/backbone/backbone-min.js'],
-            dest: 'build/scripts/lib/',
-            rename: function (dest, src) {
-              return dest + src.substring(src.lastIndexOf('/')).replace('-min','');
-            }
-          },
-          {
-            expand: true,
             src: ['bower/d3/d3.min.js'],
-            dest: 'build/scripts/lib/',
-            rename: function (dest, src) {
-              return dest + src.substring(src.lastIndexOf('/')).replace('.min','');
-            }
-          },
-          {
-            expand: true,
-            src: ['bower/d3bb/build/d3bb.min.js'],
             dest: 'build/scripts/lib/',
             rename: function (dest, src) {
               return dest + src.substring(src.lastIndexOf('/')).replace('.min','');
@@ -50,8 +18,6 @@ module.exports = function(grunt) {
             expand: true,
             flatten: true,
             src: [
-              'src/scripts/lib/underscore.js',
-              'src/scripts/lib/json2.js',
               'src/scripts/lib/flatpage_stubs.js'
             ],
             dest: 'build/scripts/lib/'
@@ -91,7 +57,8 @@ module.exports = function(grunt) {
       },
       my_target: {
         files: {
-          'build/scripts/main.js'   : ['src/scripts/main.js']
+          'build/scripts/flu_hospitalization.js' : ['src/scripts/flu_hospitalization.js'],
+          'build/scripts/flu_vaccination.js'    : ['src/scripts/flu_vaccination.js']
         }
       }
     },
@@ -103,7 +70,9 @@ module.exports = function(grunt) {
       },
       build: {
         files: {
-          'tmp/index.html': ['src/index.html']
+          'tmp/index.html'               : ['src/index.html'],
+          'tmp/flu_hospitalization.html' : ['src/flu_hospitalization.html'],
+          'tmp/flu_vaccination.html'     : ['src/flu_vaccination.html']
         }
       }
     },
@@ -116,7 +85,9 @@ module.exports = function(grunt) {
           useShortDoctype: true
         },
         files: {
-          'build/index.html'    : 'tmp/index.html'
+          'build/index.html'                  : 'tmp/index.html',
+          'build/flu_hospitalization.html'    : 'tmp/flu_hospitalization.html',
+          'build/flu_vaccination.html'        : 'tmp/flu_vaccination.html'
         }
       }
     },
@@ -127,68 +98,24 @@ module.exports = function(grunt) {
           report: 'gzip'
         },
         files: {
-          'build/style/app.css': ['src/style/app.css'],
-          'build/style/skeleton.css': ['src/style/skeleton.css']
+          'build/style/app.css'      : ['src/style/app.css'],
+          'build/style/skeleton.css' : ['src/style/skeleton.css']
         }
       }
     },
 
-    imagemin: {
-      jpg: {
-        options: { progressive: true },
-        files: [{
-          expand: true,
-          cwd: "src/images",
-          src: ["*.jpg"],
-          dest: "build/images"
-        }]
-      },
-      png: {
-        options: { optimizationLevel: 3 },
-        files: [{
-          expand: true,
-          cwd: "src/images",
-          src: ["*.png"],
-          dest: "build/images"
-        }]
-      },
-      gif: {
-        options: { interlaced: true },
-        files: [{
-          expand: true,
-          cwd: "src/images",
-          src: ["*.gif"],
-          dest: "build/images"
-        }]
-      },
-      svg: {
-        options: {
-          removeViewBox: false,
-          removeEmptyAttrs: false
-        },
-        files: [{
-          expand: true,
-          cwd: "src/images",
-          src: ["*.svg"],
-          dest: "build/images"
-        }]
-      }
-    },
-
     s3: {
-      key: "<%= aws.key %>",
-      secret: "<%= aws.secret %>",
-      bucket: "<%= aws.bucket %>",
-      access: "public-read",
-      gzip: true,
-      gzipExclude: [".jpg",".png"],
-      debug: false,
-      upload: [
-        { src: 'build/*.html', dest: '.' },
-        { src: 'build/scripts/*', dest: 'scripts/' },
-        { src: 'build/scripts/lib/*', dest: 'scripts/lib/' },
-        { src: 'build/style/*', dest: 'style/' }
-      ]
+      options: {
+        accessKeyId: "<%= aws.key %>",
+        secretAccessKey: "<%= aws.secret %>",
+        bucket: "<%= aws.bucket %>",
+        access: "public-read",
+        gzip: true
+      },
+      build: {
+        cwd: "build/",
+        src: "**"
+      }
     },
 
     bowercopy: {
@@ -216,12 +143,7 @@ module.exports = function(grunt) {
           destPrefix: 'src/scripts/lib'
         },
         files: {
-          "jquery.js": "jquery/dist/jquery.js",
-          "underscore.js": "underscore/underscore.js",
-          "json2.js": "json2/json2.js",
-          "backbone.js": "bower/backbone/backbone.js",
-          "d3.js": "bower/d3/d3.min.js",
-          "d3bb.js": "bower/d3bb/build/d3bb.js"
+          "d3.js": "bower/d3/d3.min.js"
         }
       }
     },
@@ -248,16 +170,18 @@ module.exports = function(grunt) {
 
     open: {
       dev: {
-        path: 'http://localhost:<%= express.dev.options.port %>'
+        path: 'http://localhost:<%= express.dev.options.port %>',
+        app: "Google Chrome"
       },
       test: {
-        path: 'http://localhost:<%= express.test.options.port %>/SpecRunner.html'
+        path: 'http://localhost:<%= express.test.options.port %>/SpecRunner.html',
+        app: "Google Chrome"
       }
     },
 
     watch: {
       dev: {
-        files: ['src/index.html','src/scripts/*.js','src/style/**/*.css'],
+        files: ['src/*.html','src/scripts/*.js','src/style/**/*.css'],
         options: {
           livereload: true
         }
@@ -280,7 +204,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-imagemin');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-processhtml');
-  grunt.loadNpmTasks('grunt-s3');
+  grunt.loadNpmTasks('grunt-aws');
   grunt.loadNpmTasks('grunt-bowercopy');
   grunt.loadNpmTasks('grunt-express');
   grunt.loadNpmTasks('grunt-open');

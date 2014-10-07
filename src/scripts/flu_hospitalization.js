@@ -1,85 +1,4 @@
 
-<!DOCTYPE html>
-<meta charset="utf-8">
-<title>Hospital visits for flu-like illness</title>
-<head><link rel="stylesheet" type="text/css" href="flu_style.css" /></head>
-
-
-<style>
-
-.axis path,
-.axis line {
-  fill: none;
-  stroke: #000;
-  shape-rendering: crispEdges;
-}
-
-.x.axis path {
-  stroke: #000;
-  fill:none;
-  shape-rendering: crispEdges;
-}
-
-.x.axis text {
-font-size: 12px;
-}
-
-.line {
-  fill: none;
-  stroke-width: 3.0px;
-}
-
-
-
-.explainer{
-  position: absolute;
-  font-size: 14px;
-  height: 20px;
-  opacity: 0;
-
-
-}
-.explainerHolder {
-  position: relative;
-  left: 10px;
-  font-size: 14px;
-  min-height: 50px;
-  opacity: 1;
-}
-
-</style>
-<div class="title">Hospital visits for flu-like illness in the South</div>
-<div class="subtitle">One of the ways to see the severity of a flu season is to count the percent of hospital visits that are for "flu-like symptoms."  But the type of flu and who it hits are also part of the story.  Hover over the legend or lines to learn more.</div>
-
-<p id="menu">Choose a flu season:<br><select></select></p>
-<div id="legend">
-<p class="explainerHolder"></p>
-</div>
-<p class="chart">
-<p class="footer">
-  This graph includes Region 4, as defined by the Department of Health and Human Services: Alabama, Florida, Georgia, Kentucky, Mississippi, North Carolina, South Carolina and Tennessee.
-  <br><br>
-  Percentage of visits for influenza-like illness reported by the U.S. Outpatient Influenza-like Illness Surveillance Network (ILINet), weekly national summary, selected seasons.<br><br>
-  Source: <a href="http://gis.cdc.gov/grasp/fluview/fluportaldashboard.html" target="_blank">http://gis.cdc.gov/grasp/fluview/fluportaldashboard.html</a>
-  <br><br>
-  See more at CDC's <a href="http://www.cdc.gov/flu/weekly/" target=_blank>FluView</a>
-  <br><br>
-  Methodology: The data above was downloaded Sept. 14 from the CDC as a custom spreadsheet. It was refined in Excel and graphed with Javascript.
-</div>
-
-
-<!-- ************* SOURCE & NOTES *************
-
-http://gis.cdc.gov/grasp/fluview/fluportaldashboard.html Accessed 9/14/14
-
-********* /SOURCE ******************** -->
-
-<body>
-<script>document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1"></' + 'script>')</script>
-<script src="http://d3js.org/d3.v3.min.js"></script>
-
-<script>
-
 
 console.log("ok");
 
@@ -193,7 +112,7 @@ function seasonAssigner(num1, num2) {
 // ********* LOAD DATA
 
 //CATCHMENT, NETWORK, SEASON,  MMWR-YEAR, MMWR-WEEK, AGE, CATEGORY,  RATE
-d3.csv("flu_hospitalization.csv", function (south_error, south_data){
+d3.csv("data/flu_hospitalization.csv", function (south_error, south_data){
 
 
 color.domain(d3.keys(south_data[0]).filter(function(key) {return key == 'YEAR'; }));
@@ -270,7 +189,6 @@ function change(){
 }
 
 function redraw_lines(){
- console.log( d3.selectAll("#legend div"))
  d3.selectAll("#legend div").transition().style("opacity", 0);
 
   var temp_var = menu.property("value");
@@ -295,7 +213,4 @@ function redraw_lines(){
 }
 
 
-
-
-</script>
 

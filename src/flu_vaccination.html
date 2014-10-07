@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html class="ocks-org do-not-copy">
+<meta charset="utf-8">
+<title>Flu Vaccination Rate</title>
+<head><link rel="stylesheet" type="text/css" href="style/app.css" /></head>
+
+<style>
+
+.axis path{
+  stroke: none;
+  fill: none;
+  stroke: #FFF;
+  shape-rendering: crispEdges;
+}
+
+
+.axis line {
+  stroke: none;
+  fill: none;
+  stroke: #FFF;
+  shape-rendering: crispEdges;
+}
+
+
+</style>
+<body>
+<div class="title">Georgia lags in flu vaccination rates</div>
+<div class="subtitle">Georgia brought down the national flu vaccination rate during the 2012-2103 season.<br><br></div>
+
+<div class="explainer">
+Georgians face some of the same barriers to a flu shot as people in the rest of the country, like getting time off work to take the family for their immunization, according to the Georgia Department of Public Health. Pregnant women are a special concern as 41 Georgia counties have no OB service.<br><br>
+
+This school year, the DPH is repeating a school-based program that nearly doubled the number of K-12-age children vaccinated in 2012-2013. County health departments partner with community groups, places of worship and employers to deploy shots at convenient, accesible times and places.<br><br>
+
+The DPH advises everyone over the age of 6 months to get an annual flu shot.
+<br><br>
+</div>
+
+<p id="menu">Click to see how your demographic stacks up<br><select><select></p>
+
+<p class="chart"></p>
+
+<p class="footer">
+
+<br>
+<br>
+
+  May, 2013 cumulative flu vaccination rate for the 2012-2013 flu season. Vaccination coverage estimates by State National Immunization Survey (NIS) and Behavioral Risk Factor Surveillance System (BRFSS), 2012–13 influenza season.
+<br>
+<br>
+Numbers reflect a 95% confidence interval with margin of error under 5 percent.
+<br>
+<br>
+Source: <a href="http://www.cdc.gov/flu/fluvaxview/coverage-1213estimates.htm" target="_blank">http://www.cdc.gov/flu/fluvaxview/coverage-1213estimates.htm</a>
+<br><br>
+Methodology:
+The data above was downlaoded Sept. 9 from the CDC as a spreadsheet, concatenated and refined using Python, then filtered and graphed with Javascript.
+<br>
+<br>
+* CDC reports insufficient data
+
+<script src="scripts/lib/d3.js"></script>
+<script src="scripts/flu_vaccination.js"></script>
+
+</body>
+</html>

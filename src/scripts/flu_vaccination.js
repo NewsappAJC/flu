@@ -1,83 +1,3 @@
-<!DOCTYPE html>
-<html class="ocks-org do-not-copy">
-<meta charset="utf-8">
-<title>Flu Vaccination Rate</title>
-<head><link rel="stylesheet" type="text/css" href="flu_style.css" /></head>
-
-<style>
-
-.axis path{
-  stroke: none;
-  fill: none;
-  stroke: #FFF;
-  shape-rendering: crispEdges;
-}
-
-
-.axis line {
-  stroke: none;
-  fill: none;
-  stroke: #FFF;
-  shape-rendering: crispEdges;
-}
-
-
-</style>
-<body>
-<div class="title">Georgia lags in flu vaccination rates</div>
-<div class="subtitle">Georgia brought down the national flu vaccination rate during the 2012-2103 season.<br><br></div>
-
-<div class="explainer">
-Georgians face some of the same barriers to a flu shot as people in the rest of the country, like getting time off work to take the family for their immunization, according to the Georgia Department of Public Health. Pregnant women are a special concern as 41 Georgia counties have no OB service.<br><br>
-
-This school year, the DPH is repeating a school-based program that nearly doubled the number of K-12-age children vaccinated in 2012-2013. County health departments partner with community groups, places of worship and employers to deploy shots at convenient, accesible times and places.<br><br>
-
-The DPH advises everyone over the age of 6 months to get an annual flu shot.
-<br><br>
-</div>
-
-<!-- 
-<div>Click to see how your demographic stacks up:</div>
-
-<select id="choose-demographic">
-  <option value="All persons 6 months +">All persons 6 months +</option>
-  <option value="6 months - 17 years">6 months - 17 years</option>
-  <option value="18 and up">18 and up</option>
-  <option value="18 - 64">18 - 64</option>
-  <option value="65 and up">65 and up</option>
-  <option value="Hispanic, 6 months +">Hispanic, 6 months +</option>
-  <option value="Black, 6 months +">Black, 6 months +</option>
-  <option value="Multiple or other race, 6 months +">Multiple or other race, 6 months +</option>
-  <option value="White, 6 months +">White, 6 months +</option>
-</select> -->
-
-
-<p id="menu">Click to see how your demographic stacks up<br><select><select></p>
-
-<p class="chart"></p>
-
-<p class="footer">
-
-<br>
-<br>
-
-  May, 2013 cumulative flu vaccination rate for the 2012-2013 flu season. Vaccination coverage estimates by State National Immunization Survey (NIS) and Behavioral Risk Factor Surveillance System (BRFSS), 2012–13 influenza season.
-<br>
-<br>
-Numbers reflect a 95% confidence interval with margin of error under 5 percent.
-<br>
-<br>
-Source: <a href="http://www.cdc.gov/flu/fluvaxview/coverage-1213estimates.htm" target="_blank">http://www.cdc.gov/flu/fluvaxview/coverage-1213estimates.htm</a>
-<br><br>
-Methodology:
-The data above was downlaoded Sept. 9 from the CDC as a spreadsheet, concatenated and refined using Python, then filtered and graphed with Javascript.
-<br>
-<br>
-* CDC reports insufficient data
-
-<script>document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1"></' + 'script>')</script>
-<script src="http://d3js.org/d3.v2.min.js?2.9.1"></script>
-<script>
 
 console.log("ok");
 
@@ -88,8 +8,6 @@ var margin = {top: 10, right: 100, bottom: 10, left: 10},
     width = window.innerWidth,
     width = width - margin.left - margin.right,
     height = d3.max([width * 1.3, 600]) - margin.top - margin.bottom;
-    console.log(height);
-
 
 var states,
     age;
@@ -126,7 +44,7 @@ var menu = d3.select("#menu select")
 
 // ********* LOAD DATA, SORT & FILTER
 
-d3.csv("flu_vaccination.csv", function(data) {
+d3.csv("data/flu_vaccination.csv", function(data) {
 
   states = data;
 
@@ -135,7 +53,7 @@ d3.csv("flu_vaccination.csv", function(data) {
   });
 
   color.domain(ages);
-  
+
   states.forEach(function(state) {
     ages.forEach(function(age) {
       state[age] = state[age];
@@ -273,7 +191,3 @@ function resize() {
 
   x.range([0, width]);
 }
-
-</script>
-</body>
-</html>
