@@ -110,7 +110,8 @@ module.exports = function(grunt) {
         secretAccessKey: "<%= aws.secret %>",
         bucket: "<%= aws.bucket %>",
         access: "public-read",
-        gzip: true
+        gzip: true,
+        cache: false
       },
       build: {
         cwd: "build/",
